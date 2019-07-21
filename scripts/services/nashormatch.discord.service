@@ -1,0 +1,17 @@
+[Unit]
+Description=NashorMatch Discord Bot
+
+[Service]
+WorkingDirectory=/var/dotnetcore/NashorMatch.Discord
+ExecStart=/usr/bin/dotnet /var/dotnetcore/NashorMatch.Discord/NashorMatch.Discord.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=nashormatch.discord
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=NashorMatchDiscordToken=
+Environment=NashorMatchRiotKey=
+
+[Install]
+WantedBy=multi-user.target

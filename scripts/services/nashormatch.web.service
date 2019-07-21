@@ -1,0 +1,17 @@
+[Unit]
+Description=NashorMatch Website
+
+[Service]
+WorkingDirectory=/var/aspnetcore/NashorMatch.Web
+ExecStart=/usr/bin/dotnet /var/aspnetcore/NashorMatch.Web/NashorMatch.Web.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=nashormatch.web
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+Environment=NashorMatchDiscordId=
+Environment=NashorMatchDiscordSecret=
+
+[Install]
+WantedBy=multi-user.target
