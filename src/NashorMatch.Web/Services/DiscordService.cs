@@ -55,9 +55,9 @@ namespace NashorMatch.Web.Services
                 { "grant_type", "refresh_token" },
                 { "refresh_token", token },
 #if DEBUG
-                { "redirect_uri", "http://localhost:5000/signin-discord" },
+                { "redirect_uri", "http://localhost:5001/signin-discord" },
 #else
-                { "redirect_uri", "https://nashormatch.com/signin-discord" },
+                { "redirect_uri", "http://nashormatch.com/signin-discord" },
 #endif
                 { "scope", "identify email connections" }
             };
