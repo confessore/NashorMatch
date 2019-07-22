@@ -40,14 +40,14 @@ namespace NashorMatch.Discord.Services
                 {
                     while (true)
                     {
-                        foreach (var user in guild.Users.Where(x => !OfflineOrInvisible(x.Status)))
+                        foreach (var user in guild.Users/*.Where(x => !OfflineOrInvisible(x.Status))*/)
                         {
                             if (!HasBotRole(user))
                             {
                                 try
                                 {
-                                    var tier = riotService.GetBestSoloRank(await riotService.GetLeaguesByNameAsync(riotService.GetRiotRegion(guild.Name), user.Nickname ?? user.Username));
-                                    if (!string.IsNullOrEmpty(tier))
+                                    var tier = await riotService.GetBestSoloRank(riotService.GetRiotRegion(guild.Name), user.Nickname ?? user.Username);
+                                    if (!string.IsNullOrEmpty(tier) && !string.IsNullOrWhiteSpace(tier))
                                     {
                                         if (CurrentStandardRole(user) == null || !IsSame(CurrentStandardRole(user), FindGuildRole(guild, tier)))
                                             await UpdateTierRoleAsync(guild, user, tier);
