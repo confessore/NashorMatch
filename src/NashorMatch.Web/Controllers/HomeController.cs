@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -29,6 +30,13 @@ namespace NashorMatch.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Checks the database to see if a user has any verified connections.
+        /// </summary>
+        /// <param name="region"></param>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns>Ok() if verified and BadRequest() if not local or not verified</returns>
         [HttpGet]
         [Route("Verified")]
         public async Task<IActionResult> Verified(string region, long id, string name)
