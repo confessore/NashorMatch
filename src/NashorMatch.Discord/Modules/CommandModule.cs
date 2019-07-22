@@ -34,14 +34,11 @@ namespace NashorMatch.Discord.Modules
         }
 
         [Command("verify")]
-        [Summary("verified: adds the 'verified' role to a user")]
-        async Task VerifyAsync([Remainder] string name)
+        [Summary("all: adds the 'verified' role to a user")]
+        async Task VerifyAsync()
         {
             await RemoveCommandMessageAsync();
-            if (IsVerified)
-                await GetGuildUser(name).AddRoleAsync(GetGuildRole("verified"));
-            else
-                await ReplyAsync("you don't have permission to do that");
+            await roleService.TryAddVerifiedRole(SocketGuild, SocketGuildUser);
         }
 
         [Command("top")]
@@ -50,7 +47,7 @@ namespace NashorMatch.Discord.Modules
         {
             await RemoveCommandMessageAsync();
             if (IsVerified)
-                await roleService.UpdateLaneRoleAsync(SocketGuildUser, SocketGuild, "top");
+                await roleService.UpdateLaneRoleAsync(SocketGuild, SocketGuildUser, "top");
             else
                 await ReplyAsync("you don't have permission to do that");
         }
@@ -61,7 +58,7 @@ namespace NashorMatch.Discord.Modules
         {
             await RemoveCommandMessageAsync();
             if (IsVerified)
-                await roleService.UpdateLaneRoleAsync(SocketGuildUser, SocketGuild, "mid");
+                await roleService.UpdateLaneRoleAsync(SocketGuild, SocketGuildUser, "mid");
             else
                 await ReplyAsync("you don't have permission to do that");
         }
@@ -72,7 +69,7 @@ namespace NashorMatch.Discord.Modules
         {
             await RemoveCommandMessageAsync();
             if (IsVerified)
-                await roleService.UpdateLaneRoleAsync(SocketGuildUser, SocketGuild, "jng");
+                await roleService.UpdateLaneRoleAsync(SocketGuild, SocketGuildUser, "jng");
             else
                 await ReplyAsync("you don't have permission to do that");
         }
@@ -83,7 +80,7 @@ namespace NashorMatch.Discord.Modules
         {
             await RemoveCommandMessageAsync();
             if (IsVerified)
-                await roleService.UpdateLaneRoleAsync(SocketGuildUser, SocketGuild, "adc");
+                await roleService.UpdateLaneRoleAsync(SocketGuild, SocketGuildUser, "adc");
             else
                 await ReplyAsync("you don't have permission to do that");
         }
@@ -94,7 +91,7 @@ namespace NashorMatch.Discord.Modules
         {
             await RemoveCommandMessageAsync();
             if (IsVerified)
-                await roleService.UpdateLaneRoleAsync(SocketGuildUser, SocketGuild, "sup");
+                await roleService.UpdateLaneRoleAsync(SocketGuild, SocketGuildUser, "sup");
             else
                 await ReplyAsync("you don't have permission to do that");
         }
@@ -162,7 +159,7 @@ namespace NashorMatch.Discord.Modules
             await RemoveCommandMessageAsync();
             try
             {
-                var leagues = await riotService.GetLeaguesByNameAsync(riotService.Region(Context.Guild.Name), name);
+                var leagues = await riotService.GetLeaguesByNameAsync(riotService.GetRiotRegion(Context.Guild.Name), name);
                 if (leagues.Length == 0)
                     await ReplyAsync("no leagues found");
                 else

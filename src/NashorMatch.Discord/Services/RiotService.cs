@@ -42,7 +42,7 @@ namespace NashorMatch.Discord.Services
         public string GetBestSoloRank(League[] leagues) =>
             leagues.Any() ? leagues.Where(x => x.QueueType.ToLower() == "ranked_solo_5x5").FirstOrDefault().Tier ?? string.Empty : string.Empty;
 
-        public RiotRegion Region(string guildName)
+        public RiotRegion GetRiotRegion(string guildName)
         {
             if (guildName.Contains("EUW")) return RiotRegion.euw1;
             else return RiotRegion.na1;

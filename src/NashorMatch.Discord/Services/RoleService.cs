@@ -46,11 +46,11 @@ namespace NashorMatch.Discord.Services
                             {
                                 try
                                 {
-                                    var tier = riotService.GetBestSoloRank(await riotService.GetLeaguesByNameAsync(riotService.Region(guild.Name), user.Nickname ?? user.Username));
+                                    var tier = riotService.GetBestSoloRank(await riotService.GetLeaguesByNameAsync(riotService.GetRiotRegion(guild.Name), user.Nickname ?? user.Username));
                                     if (!string.IsNullOrEmpty(tier))
                                     {
                                         if (CurrentStandardRole(user) == null || !IsSame(CurrentStandardRole(user), FindGuildRole(guild, tier)))
-                                            await UpdateTierRoleAsync(user, guild, tier);
+                                            await UpdateTierRoleAsync(guild, user, tier);
                                         /*if (CurrentStandardRole(user) == null || IsPromotion(CurrentStandardRole(user), GetGuildRole(guild, tier)))
                                         {
                                             await UpdateStandardRoleAsync(user, guild, tier);
@@ -60,7 +60,7 @@ namespace NashorMatch.Discord.Services
                                             await UpdateStandardRoleAsync(user, guild, tier);*/
                                     }
                                     else if (CurrentStandardRole(user) == null || !IsSame(CurrentStandardRole(user), FindGuildRole(guild, "unranked")))
-                                        await UpdateTierRoleAsync(user, guild, "unranked");
+                                        await UpdateTierRoleAsync(guild, user, "unranked");
                                 }
                                 catch { await RemoveTierRolesAsync(user); }
                                 finally { await Task.Delay(2500); }
@@ -72,23 +72,21 @@ namespace NashorMatch.Discord.Services
             return Task.CompletedTask;
         }
 
-        async Task SendPromotionMessageAsync(SocketGuild guild, string channel, SocketGuildUser user, string tier) =>
+        async Task SendPromotionMessageAsync(SocketGuild guild, SocketGuildUser user, string channel, string tier) =>
             await guild.TextChannels.Where(x => x.Name.ToLower() == channel.ToLower()).FirstOrDefault()
                 .SendMessageAsync($":tada: **{user.Nickname ?? user.Username}** was promoted to :sparkles: **{tier}** :sparkles:");
 
-        async Task UpdateTierRoleAsync(SocketGuildUser user, SocketGuild guild, string name)
+        async Task UpdateTierRoleAsync(SocketGuild guild, SocketGuildUser user, string name)
         {
             var roles = user.Roles.ToList();
             foreach (var role in user.Roles)
                 if (!IsAdminRole(role.Name) && !IsLaneRole(role.Name))
                     roles.Remove(role);
             roles.Add(FindGuildRole(guild, name));
-            if (!HasVerifiedRole(user) && await GetVerificationStatus(user))
-                roles.Add(FindGuildRole(guild, "verified"));
             await user.ModifyAsync(x => x.Roles = roles);
         }
 
-        public async Task UpdateLaneRoleAsync(SocketGuildUser user, SocketGuild guild, string name)
+        public async Task UpdateLaneRoleAsync(SocketGuild guild, SocketGuildUser user, string name)
         {
             var roles = user.Roles.ToList();
             foreach (var role in user.Roles)
@@ -137,12 +135,28 @@ namespace NashorMatch.Discord.Services
         bool ShouldHoistRole(string name) =>
             !IsLaneRole(name.ToLower()) && name.ToLower() != "verified";
 
+        public async Task TryAddVerifiedRole(SocketGuild guild, SocketGuildUser user)
+        {
+            if (!HasVerifiedRole(user))
+            {
+                var roles = user.Roles.ToList();
+                if (await IsConnectionVerified(guild, user))
+                    roles.Add(FindGuildRole(guild, "verified"));
+                await user.ModifyAsync(x => x.Roles = roles);
+            }
+        }
+
         bool HasVerifiedRole(SocketGuildUser user) =>
             user.Roles.Any(x => x.Name.ToLower() == "verified");
 
-        async Task<bool> GetVerificationStatus(SocketGuildUser user)
+        async Task<bool> IsConnectionVerified(SocketGuild guild, SocketGuildUser user)
         {
-            var response = await httpService.HttpClient.GetAsync($"https://localhost:44362/Home/Verified?region=euw&id={user.Id}&name={user.Nickname ?? user.Username}");
+#if DEBUG
+            var tmp = $"http://localhost:5001/Home/Verified?region={riotService.GetRiotRegion(guild.Name)}&id={user.Id}&name={user.Nickname ?? user.Username}";
+#else
+            var tmp = $"http://nashormatch.com/Home/Verified?region={riotService.GetRiotRegion(guild.Name)}&id={user.Id}&name={user.Nickname ?? user.Username}";
+#endif
+            var response = await httpService.HttpClient.GetAsync(tmp);
             return response.IsSuccessStatusCode;
         }
 
