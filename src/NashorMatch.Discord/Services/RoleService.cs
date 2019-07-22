@@ -135,26 +135,37 @@ namespace NashorMatch.Discord.Services
         bool ShouldHoistRole(string name) =>
             !IsLaneRole(name.ToLower()) && name.ToLower() != "verified";
 
+        DiscordRegion GetDiscordRegion(string guildName)
+        {
+            if (guildName.Contains("EUW")) return DiscordRegion.euw;
+            else return DiscordRegion.na;
+        }
+
         public async Task TryAddVerifiedRole(SocketGuild guild, SocketGuildUser user)
         {
             if (!HasVerifiedRole(user))
             {
                 var roles = user.Roles.ToList();
                 if (await IsConnectionVerified(guild, user))
+                {
+                    foreach (var role in user.Roles)
+                        if (role.IsEveryone)
+                            roles.Remove(role);
                     roles.Add(FindGuildRole(guild, "verified"));
-                await user.ModifyAsync(x => x.Roles = roles);
+                    await user.ModifyAsync(x => x.Roles = roles);
+                }
             }
         }
 
         bool HasVerifiedRole(SocketGuildUser user) =>
             user.Roles.Any(x => x.Name.ToLower() == "verified");
 
-        async Task<bool> IsConnectionVerified(SocketGuild guild, SocketGuildUser user)
+        public async Task<bool> IsConnectionVerified(SocketGuild guild, SocketGuildUser user)
         {
 #if DEBUG
-            var tmp = $"http://localhost:5001/Home/Verified?region={riotService.GetRiotRegion(guild.Name)}&id={user.Id}&name={user.Nickname ?? user.Username}";
+            var tmp = $"http://localhost:5001/Verified?region={GetDiscordRegion(guild.Name)}&id={user.Id}&name={user.Nickname ?? user.Username}";
 #else
-            var tmp = $"http://nashormatch.com/Home/Verified?region={riotService.GetRiotRegion(guild.Name)}&id={user.Id}&name={user.Nickname ?? user.Username}";
+            var tmp = $"http://nashormatch.com/Verified?region={GetDiscordRegion(guild.Name)}&id={user.Id}&name={user.Nickname ?? user.Username}";
 #endif
             var response = await httpService.HttpClient.GetAsync(tmp);
             return response.IsSuccessStatusCode;
