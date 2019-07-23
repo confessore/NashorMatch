@@ -1,4 +1,4 @@
-﻿namespace NashorMatch.Discord.Models
+﻿namespace NashorMatch.Models
 {
     public class Summoner
     {

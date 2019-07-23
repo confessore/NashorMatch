@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
 
-namespace NashorMatch.Discord.Models
+namespace NashorMatch.Models
 {
     public class Player
     {

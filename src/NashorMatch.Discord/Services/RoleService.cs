@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using NashorMatch.Discord.Enums;
+using NashorMatch.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +40,7 @@ namespace NashorMatch.Discord.Services
                 {
                     while (true)
                     {
-                        foreach (var user in guild.Users/*.Where(x => !OfflineOrInvisible(x.Status))*/)
+                        foreach (var user in guild.Users.Where(x => !OfflineOrInvisible(x.Status)))
                         {
                             if (!HasBotRole(user))
                             {

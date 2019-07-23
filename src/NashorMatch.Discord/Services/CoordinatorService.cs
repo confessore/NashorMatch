@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
-using NashorMatch.Discord.Enums;
-using NashorMatch.Discord.Models;
+using NashorMatch.Enums;
+using NashorMatch.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

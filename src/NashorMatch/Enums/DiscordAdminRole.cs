@@ -1,4 +1,4 @@
-﻿namespace NashorMatch.Discord.Enums
+﻿namespace NashorMatch.Enums
 {
     public enum DiscordAdminRole
     {

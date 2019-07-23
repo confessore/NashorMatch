@@ -1,5 +1,5 @@
-﻿using NashorMatch.Discord.Enums;
-using NashorMatch.Discord.Models;
+﻿using NashorMatch.Enums;
+using NashorMatch.Models;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
